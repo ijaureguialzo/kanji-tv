@@ -90,6 +90,7 @@ fun PantallaPrincipal(datos: Array<Kanji>) {
             Spacer(modifier = Modifier.height((escala * 10).dp))
 
             Row {
+                Texto("", Color(253, 216, 53, 255), (escala * 20).sp)
                 for ((i, kun) in datos[n.intValue].kun.withIndex()) {
                     if (i > 0 && i < datos[n.intValue].kun.size) {
                         Texto(" · ", Color(253, 216, 53, 255), (escala * 20).sp)
@@ -99,6 +100,7 @@ fun PantallaPrincipal(datos: Array<Kanji>) {
             }
 
             Row {
+                Texto("", Color.White, (escala * 20).sp)
                 for ((i, on) in datos[n.intValue].on.withIndex()) {
                     if (i > 0 && i < datos[n.intValue].on.size) {
                         Texto(" · ", Color.White, (escala * 20).sp)
