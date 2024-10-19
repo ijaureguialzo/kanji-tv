@@ -75,6 +75,8 @@ fun PantallaPrincipal(datos: Array<Kanji>) {
         Font("Kyokasho.ttc", LocalContext.current.assets)
     )
 
+    val escala = 2
+
     KanjiTVTheme {
         Column(
             modifier = Modifier
@@ -83,31 +85,31 @@ fun PantallaPrincipal(datos: Array<Kanji>) {
                 .wrapContentSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Texto(datos[n.intValue].kanji, Color.White, 80.sp, kyokashoFontFamily)
+            Texto(datos[n.intValue].kanji, Color.White, (escala * 80).sp, kyokashoFontFamily)
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height((escala * 10).dp))
 
             Row {
                 for ((i, kun) in datos[n.intValue].kun.withIndex()) {
                     if (i > 0 && i < datos[n.intValue].kun.size) {
-                        Texto(" · ", Color(253, 216, 53, 255), 20.sp)
+                        Texto(" · ", Color(253, 216, 53, 255), (escala * 20).sp)
                     }
-                    Texto(kun, Color(253, 216, 53, 255), 20.sp)
+                    Texto(kun, Color(253, 216, 53, 255), (escala * 20).sp)
                 }
             }
 
             Row {
                 for ((i, on) in datos[n.intValue].on.withIndex()) {
                     if (i > 0 && i < datos[n.intValue].on.size) {
-                        Texto(" · ", Color.White, 20.sp)
+                        Texto(" · ", Color.White, (escala * 20).sp)
                     }
-                    Texto(on, Color.White, 20.sp)
+                    Texto(on, Color.White, (escala * 20).sp)
                 }
             }
 
             Column(
                 modifier = Modifier
-                    .padding(top = 5.dp, bottom = 10.dp)
+                    .padding(top = (escala * 5).dp, bottom = (escala * 10).dp)
                     .wrapContentSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -115,25 +117,25 @@ fun PantallaPrincipal(datos: Array<Kanji>) {
                     text = datos[n.intValue].trazos.toString(),
                     style = TextStyle(
                         color = Color.LightGray,
-                        fontSize = 10.sp,
+                        fontSize = (escala * 10).sp,
                     ),
                     modifier = Modifier
-                        .padding(10.dp)
+                        .padding((escala * 10).dp)
                         .drawBehind {
                             drawCircle(
                                 color = Color.Black, radius = this.size.maxDimension
                             )
                         },
                 )
-                Texto(datos[n.intValue].notas, Color.LightGray, 10.sp)
+                Texto(datos[n.intValue].notas, Color.LightGray, (escala * 10).sp)
             }
 
             Row {
                 for ((i, significado) in datos[n.intValue].significados.withIndex()) {
                     if (i > 0 && i < datos[n.intValue].significados.size) {
-                        Texto(" · ", Color.White, 20.sp)
+                        Texto(" · ", Color.White, (escala * 20).sp)
                     }
-                    Texto(significado, Color.White, 20.sp)
+                    Texto(significado, Color.White, (escala * 20).sp)
                 }
             }
         }
