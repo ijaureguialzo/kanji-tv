@@ -80,7 +80,7 @@ fun PantallaPrincipal(datos: Array<Kanji>) {
     KanjiTVTheme {
         Column(
             modifier = Modifier
-                .background(Color.DarkGray)
+                .background(Color.Black)
                 .fillMaxSize()
                 .wrapContentSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -125,7 +125,7 @@ fun PantallaPrincipal(datos: Array<Kanji>) {
                         .padding((escala * 10).dp)
                         .drawBehind {
                             drawCircle(
-                                color = Color.Black, radius = this.size.maxDimension
+                                color = Color.DarkGray, radius = this.size.maxDimension
                             )
                         },
                 )
