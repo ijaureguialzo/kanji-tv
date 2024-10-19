@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -26,6 +28,7 @@ import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Text
 import com.google.gson.Gson
 import com.jaureguialzo.kanjitv.ui.theme.KanjiTVTheme
+import kotlin.concurrent.timer
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +59,13 @@ fun Texto(
 @Composable
 fun PantallaPrincipal(datos: Array<Kanji>) {
 
-    val n = (0 until datos.size).random();
+    val segundos = 20
+
+    var n = remember { mutableIntStateOf((0 until datos.size).random()) }
+
+    timer(initialDelay = segundos * 1000L, period = segundos * 1000L) {
+        n.intValue = (0 until datos.size).random()
+    }
 
     KanjiTVTheme {
         Column(
@@ -66,11 +75,11 @@ fun PantallaPrincipal(datos: Array<Kanji>) {
                 .wrapContentSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Texto(datos[n].kanji, Color.White, 80.sp, FontFamily.Serif)
+            Texto(datos[n.intValue].kanji, Color.White, 80.sp, FontFamily.Serif)
 
             Row {
-                for ((i, kun) in datos[n].kun.withIndex()) {
-                    if (i > 0 && i < datos[n].kun.size) {
+                for ((i, kun) in datos[n.intValue].kun.withIndex()) {
+                    if (i > 0 && i < datos[n.intValue].kun.size) {
                         Texto(" · ", Color(253, 216, 53, 255), 20.sp)
                     }
                     Texto(kun, Color(253, 216, 53, 255), 20.sp)
@@ -78,8 +87,8 @@ fun PantallaPrincipal(datos: Array<Kanji>) {
             }
 
             Row {
-                for ((i, on) in datos[n].on.withIndex()) {
-                    if (i > 0 && i < datos[n].on.size) {
+                for ((i, on) in datos[n.intValue].on.withIndex()) {
+                    if (i > 0 && i < datos[n.intValue].on.size) {
                         Texto(" · ", Color.White, 20.sp)
                     }
                     Texto(on, Color.White, 20.sp)
@@ -93,7 +102,7 @@ fun PantallaPrincipal(datos: Array<Kanji>) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = datos[n].trazos.toString(),
+                    text = datos[n.intValue].trazos.toString(),
                     style = TextStyle(
                         color = Color.LightGray,
                         fontSize = 10.sp,
@@ -106,12 +115,12 @@ fun PantallaPrincipal(datos: Array<Kanji>) {
                             )
                         },
                 )
-                Texto(datos[n].notas, Color.LightGray, 10.sp)
+                Texto(datos[n.intValue].notas, Color.LightGray, 10.sp)
             }
 
             Row {
-                for ((i, significado) in datos[n].significados.withIndex()) {
-                    if (i > 0 && i < datos[n].significados.size) {
+                for ((i, significado) in datos[n.intValue].significados.withIndex()) {
+                    if (i > 0 && i < datos[n.intValue].significados.size) {
                         Texto(" · ", Color.White, 20.sp)
                     }
                     Texto(significado, Color.White, 20.sp)
