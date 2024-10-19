@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -23,27 +24,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Text
+import com.google.gson.Gson
 import com.jaureguialzo.kanjitv.ui.theme.KanjiTVTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val jsonString = assets.open("kanji.json").bufferedReader().use { it.readText() }
+        val datos = Gson().fromJson(jsonString, Array<Kanji>::class.java)
+
         setContent {
-            PantallaPrincipal()
+            PantallaPrincipal(datos)
         }
     }
 }
 
 @Composable
 fun Texto(
-    text: String,
-    color: Color,
-    fontSize: TextUnit,
-    fontFamily: FontFamily = FontFamily.SansSerif
+    text: String, color: Color, fontSize: TextUnit, fontFamily: FontFamily = FontFamily.SansSerif
 ) {
     Text(
-        text = text,
-        style = TextStyle(
+        text = text, style = TextStyle(
             color = color,
             fontSize = fontSize,
             fontFamily = fontFamily,
@@ -52,7 +54,10 @@ fun Texto(
 }
 
 @Composable
-fun PantallaPrincipal() {
+fun PantallaPrincipal(datos: Array<Kanji>) {
+
+    val n = (0 until datos.size).random();
+
     KanjiTVTheme {
         Column(
             modifier = Modifier
@@ -61,9 +66,26 @@ fun PantallaPrincipal() {
                 .wrapContentSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Texto("食", Color.White, 80.sp, FontFamily.Serif)
-            Texto("たべる", Color(253, 216, 53, 255), 20.sp)
-            Texto("ショク", Color.White, 20.sp)
+            Texto(datos[n].kanji, Color.White, 80.sp, FontFamily.Serif)
+
+            Row {
+                for ((i, kun) in datos[n].kun.withIndex()) {
+                    if (i > 0 && i < datos[n].kun.size) {
+                        Texto(" · ", Color(253, 216, 53, 255), 20.sp)
+                    }
+                    Texto(kun, Color(253, 216, 53, 255), 20.sp)
+                }
+            }
+
+            Row {
+                for ((i, on) in datos[n].on.withIndex()) {
+                    if (i > 0 && i < datos[n].on.size) {
+                        Texto(" · ", Color.White, 20.sp)
+                    }
+                    Texto(on, Color.White, 20.sp)
+                }
+            }
+
             Column(
                 modifier = Modifier
                     .padding(top = 5.dp, bottom = 10.dp)
@@ -71,7 +93,7 @@ fun PantallaPrincipal() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "9",
+                    text = datos[n].trazos.toString(),
                     style = TextStyle(
                         color = Color.LightGray,
                         fontSize = 10.sp,
@@ -80,20 +102,39 @@ fun PantallaPrincipal() {
                         .padding(10.dp)
                         .drawBehind {
                             drawCircle(
-                                color = Color.Black,
-                                radius = this.size.maxDimension
+                                color = Color.Black, radius = this.size.maxDimension
                             )
                         },
                 )
-                Texto("El séptimo trazo es el gancho de la izquierda", Color.LightGray, 10.sp)
+                Texto(datos[n].notas, Color.LightGray, 10.sp)
             }
-            Texto("Comer", Color.White, 20.sp)
+
+            Row {
+                for ((i, significado) in datos[n].significados.withIndex()) {
+                    if (i > 0 && i < datos[n].significados.size) {
+                        Texto(" · ", Color.White, 20.sp)
+                    }
+                    Texto(significado, Color.White, 20.sp)
+                }
+            }
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    PantallaPrincipal()
+fun Preview() {
+    val datos = arrayOf<Kanji>(
+        Kanji(
+            id = 1,
+            kanji = "山",
+            kun = arrayOf<String>("やま"),
+            on = arrayOf<String>("サン"),
+            trazos = 3,
+            notas = "El primer trazo es el vertical central",
+            significados = arrayOf<String>("Montaña")
+        )
+    )
+
+    PantallaPrincipal(datos)
 }
