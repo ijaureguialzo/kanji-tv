@@ -3,6 +3,7 @@
 package com.jaureguialzo.kanjitv
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -37,6 +38,8 @@ import kotlin.concurrent.timer
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         val jsonString = assets.open("kanji.json").bufferedReader().use { it.readText() }
         val datos = Gson().fromJson(jsonString, Array<Kanji>::class.java)
