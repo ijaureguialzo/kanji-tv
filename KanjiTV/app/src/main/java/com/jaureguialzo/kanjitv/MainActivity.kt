@@ -16,15 +16,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -33,6 +36,8 @@ import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Text
 import com.google.gson.Gson
 import com.jaureguialzo.kanjitv.ui.theme.KanjiTVTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlin.concurrent.timer
 
 class MainActivity : ComponentActivity() {
@@ -59,6 +64,7 @@ fun Texto(
             color = color,
             fontSize = fontSize,
             fontFamily = fontFamily,
+            textAlign = TextAlign.Center
         )
     )
 }
@@ -67,11 +73,30 @@ fun Texto(
 fun PantallaPrincipal(datos: Array<Kanji>) {
 
     val segundos = 20
+    val retardo = 5
 
-    var n = remember { mutableIntStateOf((0 until datos.size).random()) }
+    var n = remember { mutableIntStateOf(0) }
+    var mostrar_kanji = remember { mutableStateOf(false) }
+    var mostrar_lecturas = remember { mutableStateOf(false) }
+    var mostrar_trazos = remember { mutableStateOf(false) }
+    var mostrar_traduccion = remember { mutableStateOf(false) }
 
-    timer(initialDelay = segundos * 1000L, period = segundos * 1000L) {
+    timer(initialDelay = 2000L, period = segundos * 1000L) {
         n.intValue = (0 until datos.size).random()
+
+        mostrar_kanji.value = true;
+        mostrar_lecturas.value = false;
+        mostrar_trazos.value = false;
+        mostrar_traduccion.value = false;
+
+        runBlocking {
+            delay(retardo * 1000L)
+        }
+
+        mostrar_kanji.value = true;
+        mostrar_lecturas.value = true;
+        mostrar_trazos.value = true;
+        mostrar_traduccion.value = true;
     }
 
     val kyokashoFontFamily = FontFamily(
@@ -88,11 +113,17 @@ fun PantallaPrincipal(datos: Array<Kanji>) {
                 .wrapContentSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Texto(datos[n.intValue].kanji, Color.White, (escala * 80).sp, kyokashoFontFamily)
+            Row(
+                modifier = Modifier.alpha(if (mostrar_kanji.value) 1f else 0f)
+            ) {
+                Texto(datos[n.intValue].kanji, Color.White, (escala * 80).sp, kyokashoFontFamily)
+            }
 
             Spacer(modifier = Modifier.height((escala * 10).dp))
 
-            Row {
+            Row(
+                modifier = Modifier.alpha(if (mostrar_lecturas.value) 1f else 0f)
+            ) {
                 Texto("", Color(253, 216, 53, 255), (escala * 20).sp)
                 for ((i, kun) in datos[n.intValue].kun.withIndex()) {
                     if (i > 0 && i < datos[n.intValue].kun.size) {
@@ -102,7 +133,9 @@ fun PantallaPrincipal(datos: Array<Kanji>) {
                 }
             }
 
-            Row {
+            Row(
+                modifier = Modifier.alpha(if (mostrar_lecturas.value) 1f else 0f)
+            ) {
                 Texto("", Color.White, (escala * 20).sp)
                 for ((i, on) in datos[n.intValue].on.withIndex()) {
                     if (i > 0 && i < datos[n.intValue].on.size) {
@@ -115,7 +148,8 @@ fun PantallaPrincipal(datos: Array<Kanji>) {
             Column(
                 modifier = Modifier
                     .padding(top = (escala * 5).dp, bottom = (escala * 10).dp)
-                    .wrapContentSize(),
+                    .wrapContentSize()
+                    .alpha(if (mostrar_trazos.value) 1f else 0f),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -132,10 +166,14 @@ fun PantallaPrincipal(datos: Array<Kanji>) {
                             )
                         },
                 )
-                Texto(datos[n.intValue].notas, Color.LightGray, (escala * 10).sp)
+                Row(modifier = Modifier.padding(horizontal = 100.dp)) {
+                    Texto(datos[n.intValue].notas, Color.LightGray, (escala * 10).sp)
+                }
             }
 
-            Row {
+            Row(
+                modifier = Modifier.alpha(if (mostrar_traduccion.value) 1f else 0f)
+            ) {
                 for ((i, significado) in datos[n.intValue].significados.withIndex()) {
                     if (i > 0 && i < datos[n.intValue].significados.size) {
                         Texto(" · ", Color.White, (escala * 20).sp)
